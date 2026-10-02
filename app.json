@@ -1,0 +1,42 @@
+{
+  "expo": {
+    "name": "NutriConcurso",
+    "slug": "nutriconcurso",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "nutriconcurso",
+    "userInterfaceStyle": "automatic",
+    "backgroundColor": "#0F766E",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "backgroundColor": "#0F766E",
+      "resizeMode": "contain",
+      "image": "./assets/splash.png"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.nutriconcurso.app",
+      "icon": "./assets/icon.png"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0F766E",
+        "foregroundImage": "./assets/adaptive-icon.png"
+      },
+      "package": "com.nutriconcurso.app",
+      "versionCode": 1
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "extra": {
+      "router": {
+        "origin": false
+      }
+    },
+    "owner": "valdenortavares"
+  }
+}

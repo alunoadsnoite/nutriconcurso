@@ -1,0 +1,34 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+
+# Native
+# Ancorado na raiz: sem a barra inicial, `android/` também ignoraria
+# qualquer pasta de fontes versionada com o mesmo nome.
+/android/
+/ios/
+
+# Build
+*.apk
+*.aab
+*.ipa
+
+# Environment
+.env
+.env.local
+
+# Misc
+.DS_Store
+npm-debug.log
+yarn-error.log
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo

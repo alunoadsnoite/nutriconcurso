@@ -38,13 +38,17 @@ JS e depende do Metro em `localhost:8081`.
 ## Organização
 
 - `src/app/`: rotas Expo Router. `_layout.tsx` monta o Stack e o StatusBar.
-- `src/components/`: `MessageBubble` (memoizado) e `ChatInput`.
+- `src/components/`: `MessageBubble` (memoizado), `SourceBadges` e `ChatInput`.
 - `src/lib/api.ts`: **única** camada de rede. Toda chamada HTTP passa por aqui.
 - `src/stores/settingsStore.ts`: endereço da API, chave e `userId`, persistidos
   em `nutriconcurso-settings`.
 - `src/hooks/`: `useChat` (estado da conversa) e `useTheme`.
 - `src/types/api.ts`: contratos espelhados da API. Se a API mudar, atualize aqui
   junto — o typecheck é a única garantia de que os dois lados batem.
+- `src/lib/api.ts`: `normalizeSources`/`normalizeSource` convertem o que vem do
+  RAG para a UI. `metadata.page` é `jsonb` e pode chegar como número **ou**
+  texto, dependendo de quem inseriu o documento — a coerção para `number` mora
+  ali e não deve ser replicada nos componentes.
 
 ## Convenções
 
@@ -69,3 +73,8 @@ JS e depende do Metro em `localhost:8081`.
   físico o usuário precisa trocar para o IP da rede local nas Configurações.
 - **A chave de API não é segredo no app** — ela viaja dentro do APK. Não a
   apresente como proteção real, e não adicionei `API_KEY` de produção aqui.
+- **A chave do Supabase nunca entra no app.** A busca acontece na API. Se
+  aparecer `SUPABASE_*` em `src/`, é bug.
+- **Não mostre badge de fonte sem o aviso de "sem documento".** Resposta sem
+  fundamento precisa dizer isso; veja `ungrounded` em `MessageBubble`.
+- **`gradlew` roda de dentro de `android/`**, não da raiz do projeto.

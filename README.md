@@ -13,11 +13,22 @@ O app não tem modelo próprio: ele conversa com a
 1. Suba a API (ver o README dela).
 2. No app, abra **Configurações** e informe o endereço do servidor.
 3. Toque em **Testar conexão**. O app chama `/health` e diz se o servidor está
-   no ar e se ele tem `OPENAI_API_KEY`.
+   no ar, se ele tem `OPENAI_API_KEY` e se a base de legislação está ligada.
 4. Salve e volte para a conversa.
 
 O botão **Nova conversa** limpa as mensagens na tela e avisa o servidor para
 descartar o histórico daquele usuário.
+
+### Fontes citadas
+
+Se a API tiver a base vetorial configurada, cada resposta do tutor vem com os
+badges dos documentos que fundamentaram ela. Tocar num badge abre o documento e
+a página.
+
+Quando a API responde **sem** documento de apoio (base desligada, ou nada
+acima do limiar de similaridade), a bolha mostra um aviso em vez das badges.
+Isso é proposital: sem ele o estudante lê memória do modelo como se fosse
+norma.
 
 ### Endereço da API
 
@@ -39,7 +50,7 @@ src/
 │   ├── _layout.tsx         # Stack, StatusBar, tema
 │   ├── index.tsx           # conversa
 │   └── settings.tsx        # endereço, chave e teste de conexão
-├── components/             # MessageBubble, ChatInput
+├── components/             # MessageBubble, SourceBadges, ChatInput
 ├── constants/theme.ts      # tokens de cor (contraste WCAG AA nos dois temas)
 ├── hooks/                  # useChat, useTheme
 ├── lib/api.ts              # cliente HTTP e tradução de erros
@@ -83,8 +94,10 @@ do APK — quem tiver o arquivo consegue extraí-la. Use apenas com servidor de
 teste. As implicações e o que falta para produção estão detalhadas no README da
 API.
 
-As respostas do tutor são material de estudo, não autorização. Legislação muda
-e o modelo erra: confira a fonte oficial antes de usar em prova.
+As respostas do tutor são material de estudo, não autorização. Legislação muda,
+o modelo erra, e os badges mostram o que foi **recuperado**, não o que foi
+**usado**: ele pode citar `[2]` sem ter lido o bloco 2. Confira na fonte oficial
+antes de usar em prova.
 
 ## Licença
 

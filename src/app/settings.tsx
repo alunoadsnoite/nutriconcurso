@@ -42,11 +42,24 @@ export default function SettingsScreen() {
     try {
       const health = await checkHealth(trimmedUrl, draftKey.trim());
       setStatus("ok");
-      setMessage(
+
+      // Uma linha por condição, para o usuário saber exatamente o que falta.
+      const linhas: string[] = [];
+      linhas.push(
         health.configured
           ? `Servidor ok — modelo ${health.model}.`
           : "Servidor ok, mas sem OPENAI_API_KEY: as perguntas vão falhar."
       );
+      if (health.rag_configured) {
+        linhas.push(
+          `Base oficial ativa${health.embedding_model ? ` (${health.embedding_model})` : ""}: as respostas vêm com fonte citada.`
+        );
+      } else {
+        linhas.push(
+          "Sem base vetorial: as respostas vêm do modelo, sem documento de apoio. Ver README da API."
+        );
+      }
+      setMessage(linhas.join("\n"));
     } catch (error) {
       setStatus("error");
       setMessage(error instanceof Error ? error.message : "Falha ao contatar o servidor.");

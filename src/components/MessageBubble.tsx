@@ -1,6 +1,7 @@
 import React, { memo } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
+import { SourceBadges } from "@/components/SourceBadges";
 import { useTheme } from "@/hooks/useTheme";
 import type { ChatMessage } from "@/types/api";
 
@@ -15,20 +16,25 @@ interface Props {
 function MessageBubbleComponent({ message }: Props) {
   const { colors } = useTheme();
   const isUser = message.role === "user";
+  const sources = isUser ? [] : (message.sources ?? []);
+
+  // `grounded === false` é a API dizendo que respondeu sem documento nenhum.
+  // O aviso importa: sem ele o estudante lê memória do modelo como se fosse
+  // norma, que é o erro que o RAG existe para reduzir.
+  const ungrounded = !isUser && message.grounded === false && sources.length === 0;
 
   return (
     <View
-      style={[
-        styles.row,
-        isUser ? styles.rowUser : styles.rowAssistant,
-      ]}
+      style={[styles.row, isUser ? styles.rowUser : styles.rowAssistant]}
       accessible
       accessibilityLabel={
         isUser
           ? `Você perguntou: ${message.text}`
           : message.failed
             ? `Mensagem não enviada: ${message.text}`
-            : `Resposta do tutor: ${message.text}`
+            : sources.length > 0
+              ? `Resposta do tutor: ${message.text}. ${sources.length} fonte(s) citada(s).`
+              : `Resposta do tutor: ${message.text}`
       }
     >
       <View
@@ -48,6 +54,16 @@ function MessageBubbleComponent({ message }: Props) {
         >
           {message.text}
         </Text>
+
+        {ungrounded ? (
+          <View style={[styles.warn, { backgroundColor: colors.surfaceAlt }]}>
+            <Text style={[styles.warnText, { color: colors.textSecondary }]}>
+              Resposta sem documento oficial de apoio. Confirme na legislação.
+            </Text>
+          </View>
+        ) : null}
+
+        <SourceBadges sources={sources} />
       </View>
     </View>
   );
@@ -69,6 +85,15 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     lineHeight: 22,
+  },
+  warn: {
+    marginTop: 10,
+    borderRadius: 10,
+    padding: 8,
+  },
+  warnText: {
+    fontSize: 12,
+    lineHeight: 17,
   },
 });
 

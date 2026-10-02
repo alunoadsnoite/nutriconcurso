@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { ApiError, clearConversation, sendMessage } from "@/lib/api";
+import { ApiError, clearConversation, normalizeSources, sendMessage } from "@/lib/api";
 import { useSettingsStore } from "@/stores/settingsStore";
 import type { ChatMessage } from "@/types/api";
 
@@ -78,7 +78,18 @@ export function useChat() {
         );
 
         if (!mounted.current) return;
-        setMessages((prev) => [...prev, { id: nextId(), role: "assistant", text: data.reply }]);
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: nextId(),
+            role: "assistant",
+            text: data.reply,
+            sources: normalizeSources(data.sources),
+            // Sem `rag_used` (API antiga) não afirma nem nega fundamentação:
+            // os badges é que informam. Com o campo presente, ele manda.
+            grounded: data.rag_used ?? undefined,
+          },
+        ]);
       } catch (caught) {
         if (!mounted.current) return;
         if (caught instanceof Error && caught.name === "AbortError") return;

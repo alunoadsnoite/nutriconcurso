@@ -10,6 +10,8 @@ import type {
   ChatRequestBody,
   ChatResponseBody,
   HealthResponseBody,
+  Source,
+  SourceItemBody,
 } from "@/types/api";
 
 export class ApiError extends Error {
@@ -50,7 +52,9 @@ async function readError(response: Response): Promise<string> {
 
   if (response.status === 401) return "Chave de API inválida. Confira em Configurações.";
   if (response.status === 429) return "Limite de requisições atingido. Aguarde um instante.";
-  if (response.status === 503) return "O servidor está sem a chave da OpenAI configurada.";
+  if (response.status === 503) {
+    return "O servidor está sem configuração, ou a base vetorial está indisponível.";
+  }
   if (response.status >= 500) return "O servidor falhou ao responder. Tente de novo.";
 
   return `Erro ${response.status} ao falar com o servidor.`;
@@ -106,6 +110,39 @@ export async function sendMessage(
     { method: "POST", body: JSON.stringify(body) },
     signal
   );
+}
+
+/**
+ * Converte `page` para número, aceitando o que a API e o banco podem mandar.
+ * `metadata.page` vira `jsonb`: se quem inseriu gravou `"4"` em vez de `4`, o
+ * valor chega como texto e a interface precisa lidar com os dois.
+ */
+function toPageNumber(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return Math.trunc(value);
+  if (typeof value === "string" && value.trim() !== "") {
+    const parsed = Number.parseInt(value, 10);
+    return Number.isNaN(parsed) ? null : parsed;
+  }
+  return null;
+}
+
+export function normalizeSource(raw: SourceItemBody): Source {
+  const label =
+    typeof raw.source === "string" && raw.source.trim() !== ""
+      ? raw.source
+      : typeof raw.title === "string" && raw.title.trim() !== ""
+        ? raw.title
+        : "Documento oficial";
+
+  return { source: label, page: toPageNumber(raw.page) };
+}
+
+export function normalizeSources(raw: unknown): Source[] {
+  if (!Array.isArray(raw)) return [];
+
+  return raw
+    .filter((item): item is SourceItemBody => typeof item === "object" && item !== null)
+    .map(normalizeSource);
 }
 
 export async function clearConversation(

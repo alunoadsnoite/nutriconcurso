@@ -3,6 +3,11 @@
 export interface ChatRequestBody {
   message: string;
   user_id?: string;
+  /**
+   * Pede as perguntas sugeridas. Só desliga se o app souber o que fazer sem
+   * elas; ligada por padrão, porque o servidor trata a falha como não fatal.
+   */
+  include_suggestions?: boolean;
 }
 
 /**
@@ -23,6 +28,13 @@ export interface ChatResponseBody {
   sources?: SourceItemBody[];
   /** A resposta saiu de documento oficial, ou do modelo sem contexto? */
   rag_used?: boolean;
+  /**
+   * Números dos blocos citados, na ordem. Vem junto porque o texto traz
+   * `[[fonte:N]]` que o app desenha, e a lista fecha o par fonte ↔ documento.
+   */
+  citations?: number[];
+  /** Perguntas de continuação. Vazio quando desligado ou quando falhou. */
+  suggestions?: string[];
 }
 
 export interface HealthResponseBody {
@@ -31,6 +43,18 @@ export interface HealthResponseBody {
   model: string;
   rag_configured?: boolean;
   embedding_model?: string | null;
+  /** O servidor aceita `/api/v1/chat/stream`. */
+  streaming?: boolean;
+}
+
+/** Uma mensagem guardada no servidor, para restaurar a tela. */
+export interface HistoryMessageBody {
+  role: string;
+  content: string;
+}
+
+export interface HistoryResponseBody {
+  messages: HistoryMessageBody[];
 }
 
 export type ChatRole = "user" | "assistant";
@@ -40,6 +64,17 @@ export interface Source {
   source: string;
   page: number | null;
 }
+
+/**
+ * Trecho de texto entre dois marcadores de citação.
+ *
+ * `text` e `citation` não se misturam porque o app precisa desenhar o número
+ * como um selo clicável no meio da frase, e não como texto solto. Se o modelo
+ * emite a resposta sem marcador nenhum, vem um único segmento de texto.
+ */
+export type TextSegment =
+  | { kind: "text"; text: string }
+  | { kind: "citation"; number: number };
 
 export interface ChatMessage {
   id: string;
@@ -51,4 +86,8 @@ export interface ChatMessage {
   sources?: Source[];
   /** `false` quando a resposta saiu do modelo sem documento de apoio. */
   grounded?: boolean;
+  /** Blocos citados, como a API informou. */
+  citations?: number[];
+  /** A resposta ainda está chegando. */
+  streaming?: boolean;
 }

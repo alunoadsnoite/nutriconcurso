@@ -1,0 +1,21 @@
+event: sources
+data: {"sources": [{"source": "manual-1.pdf", "page": 1}, {"source": "manual-2.pdf", "page": 2}, {"source": "manual-3.pdf", "page": 3}]}
+
+event: token
+data: {"t": "A UAN (Unidade de Alimentação "}
+
+event: token
+data: {"t": "e Nutrição) equivale a 1.400 kcal "}
+
+event: token
+data: {"t": "[[fonte:1]] por pessoa ao dia. Este trecho "}
+
+event: token
+data: {"t": " não devia aparecer. [1] do inciso continua."}
+
+event: suggestions
+data: {"suggestions": ["Como dimensionar uma UAN de creche?", "Qual o Fator de Correção?", "Gabarito comentado da questão"]}
+
+event: done
+data: {"citations": [1]}
+

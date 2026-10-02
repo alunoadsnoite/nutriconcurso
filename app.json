@@ -2,7 +2,7 @@
   "expo": {
     "name": "NutriConcurso",
     "slug": "nutriconcurso",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "scheme": "nutriconcurso",
     "userInterfaceStyle": "automatic",
@@ -27,7 +27,7 @@
         "foregroundImage": "./assets/adaptive-icon.png"
       },
       "package": "com.nutriconcurso.app",
-      "versionCode": 2
+      "versionCode": 3
     },
     "plugins": [
       "expo-router"

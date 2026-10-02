@@ -12,6 +12,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ChatInput } from "@/components/ChatInput";
 import { MessageBubble } from "@/components/MessageBubble";
+import { SuggestionChips } from "@/components/SuggestionChips";
 import { useChat } from "@/hooks/useChat";
 import { useTheme } from "@/hooks/useTheme";
 import { useSettingsStore } from "@/stores/settingsStore";
@@ -21,7 +22,8 @@ export default function ChatScreen() {
   const { colors } = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { messages, sending, error, retryOf, send, retry, startNewConversation } = useChat();
+  const { messages, suggestions, sending, error, retryOf, send, retry, startNewConversation } =
+    useChat();
   const hydrated = useSettingsStore((s) => s.hydrated);
 
   const listRef = useRef<FlatList<ChatMessage>>(null);
@@ -107,6 +109,11 @@ export default function ChatScreen() {
           )}
         </View>
       )}
+
+      {/* some durante o envio: as sugestões se referem à resposta anterior */}
+      {!sending ? (
+        <SuggestionChips suggestions={suggestions} onPick={send} />
+      ) : null}
 
       <View style={{ paddingBottom: insets.bottom }}>
         <ChatInput onSend={send} sending={sending} />
